@@ -6,15 +6,26 @@ import "firebase/auth";
 //import "firebase/functions";
 //import "firebase/storage";
 
+import {
+  apiKey,
+  authDomain,
+  databaseURL,
+  projectId,
+  storageBucket,
+  messagingSenderId,
+  appId } from 'react-native-dotenv'
+
+console.log("process.env.apiKey")
+console.log(process.env.apiKey)
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  databaseURL: process.env.databaseURL,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId,
+  apiKey,
+  authDomain,
+  databaseURL, 
+  projectId,
+  storageBucket,
+  messagingSenderId,
+  appId,
 };
 
 firebase.initializeApp(firebaseConfig);
