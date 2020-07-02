@@ -17,9 +17,9 @@ class App extends Component {
   signup () {
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then((user: any) => {
-        if (user) {
-            console.log("Success to Signup")
-        }
+      if (user) {
+          console.log("Success to Signup")
+      }
     })
     .catch(error => {
         console.log(error);
@@ -37,6 +37,15 @@ class App extends Component {
   logout() {
     firebase.auth().signOut()
   }
+
+  handleEmailChange = (inputValue: string) => {
+    this.setState({ email: inputValue })
+  }
+
+  handlePasswordChange = (inputValue: string) => {
+    this.setState({ password: inputValue })
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -45,6 +54,7 @@ class App extends Component {
           <TextInput
             style={styles.input}
             value={this.state.email}
+            onChangeText={this.handleEmailChange}
           />
         </View>
         <View style={styles.row}>
@@ -52,14 +62,23 @@ class App extends Component {
           <TextInput
             style={styles.input}
             value={this.state.password}
+            onChangeText={this.handlePasswordChange}
           />
         </View>
-        <TouchableOpacity
-          style={styles.submit}
-          onPress={() => this.login()}
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.submit}
+            onPress={() => this.login()}
           >
             <Text>ログイン</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.submit}
+            onPress={() => this.signup()}
+          >
+            <Text>サインアップ</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
