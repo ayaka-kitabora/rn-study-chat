@@ -1,29 +1,24 @@
+import 'react-native-gesture-handler';
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
-import firebase from './Firebase';
 
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+const Stack = createStackNavigator();
 
 // ページを追加する
 import Login from './screens/Login';
 import Signup from './screens/Signup';
 
 
-// setting main nav
-const MainStack = createStackNavigator(
-  {
-    Login,
-    Signup,
-  }
-)
-
-const AppContainer = createAppContainer(MainStack)
-
 class App extends Component {
   render() {
     return (
-      <AppContainer />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Signup" component={Signup} />
+        </Stack.Navigator>
+      </NavigationContainer>
     )
   }
 }

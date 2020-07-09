@@ -1,9 +1,15 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import firebase from '../Firebase';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
+interface Props {
+  navigation: NavigationProp;
+}
 
 
-class Login extends Component {
+class Login extends Component<Props> {
   state = {
     user: null as any,
     email: '' as string,
