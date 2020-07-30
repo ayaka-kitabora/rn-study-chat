@@ -8,6 +8,7 @@ class Signup extends Component {
     user: null as any,
     email: '' as string,
     password: '' as string,
+    name: '' as string,
   }
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user: any) => {
@@ -18,6 +19,17 @@ class Signup extends Component {
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then((user: any) => {
       if (user) {
+        //　上手くとれていない
+        console.log(user.uid)
+        /*
+          const uid = user.uid
+          firebase.firestore().collection('users').doc(uid).set({name})
+            .then(()=> {
+              console.log(uid)
+            }).catch((e) => {
+              console.error("Error writing document: ", e);
+            })
+          */
           console.log("Success to Signup")
       }
     })
@@ -34,9 +46,21 @@ class Signup extends Component {
     this.setState({ password: inputValue })
   }
 
+  handleNameChange = (inputName: string) => {
+    this.setState({ name: inputName })
+  }
+
   render () {
     return (
       <View style={styles.container}>
+        <View style={styles.row}>
+          <Text>アカウント名: </Text>
+          <TextInput
+            style={styles.input}
+            value={this.state.name}
+            onChangeText={this.handleNameChange}
+          />
+        </View>
         <View style={styles.row}>
           <Text>メールアドレス: </Text>
           <TextInput

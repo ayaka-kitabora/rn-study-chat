@@ -22,7 +22,7 @@ class Login extends Component<Props> {
   }
   login() {
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-    .then(response => {
+    .then(_response => {
         alert("Login Success!");
     })
     .catch(error => {

@@ -1,0 +1,67 @@
+Arguments: 
+  /Users/pt1996/.nodebrew/node/v10.15.3/bin/node /usr/local/Cellar/yarn/1.17.3/libexec/bin/yarn.js
+
+PATH: 
+  /usr/local/opt/openssl@1.1/bin:/usr/local/opt/mysql@5.7/bin:/Users/pt1996/Downloads/google-cloud-sdk/bin:/usr/local/opt/openssl/bin:/usr/local/sbin:/Users/pt1996/.nodebrew/current/bin:/Users/pt1996/.rbenv/bin:/Users/pt1996/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+Yarn version: 
+  1.17.3
+
+Node version: 
+  10.15.3
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/pt1996/projects/rn-study-chat/package.json: Unexpected string in JSON at position 819
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:304:30)
+      at /usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:315:13
+
+npm manifest: 
+  {
+    "main": "node_modules/expo/AppEntry.js",
+    "scripts": {
+      "start": "expo start",
+      "android": "expo start --android",
+      "ios": "expo start --ios",
+      "web": "expo start --web",
+      "eject": "expo eject"
+    },
+    "dependencies": {
+      "@react-native-community/masked-view": "^0.1.10",
+      "@react-navigation/native": "^5.6.1",
+      "@react-navigation/stack": "^5.6.2",
+      "babel-plugin-inline-dotenv": "^1.5.0",
+      "expo": "~37.0.3",
+      "firebase": "7.9.0",
+      "react": "~16.9.0",
+      "react-dom": "~16.9.0",
+      "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
+      "react-native-config": "^1.2.1",
+      "react-native-gesture-handler": "^1.6.1",
+      "react-native-reanimated": "^1.9.0",
+      "react-native-safe-area-context": "^3.0.7",
+      "react-native-screens": "^2.9.0"
+      "react-native-web": "~0.11.7"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.8.6",
+      "@types/react": "~16.9.23",
+      "@types/react-native": "~0.61.17",
+      "@types/react-native-dotenv": "^0.2.0",
+      "babel-preset-expo": "~8.1.0",
+      "react-native-dotenv": "^0.2.0",
+      "typescript": "~3.8.3"
+    },
+    "private": true
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
