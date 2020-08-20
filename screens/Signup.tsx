@@ -15,26 +15,27 @@ class Signup extends Component {
       this.setState({ user })
     })
   }
-  signup () {
-    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-    .then((user: any) => {
-      if (user) {
-        //　上手くとれていない
-        console.log(user.uid)
-        /*
-          const uid = user.uid
-          firebase.firestore().collection('users').doc(uid).set({name})
-            .then(()=> {
-              console.log(uid)
-            }).catch((e) => {
-              console.error("Error writing document: ", e);
-            })
-          */
-          console.log("Success to Signup")
-      }
-    })
+  async signup () {
+    const name = this.state.name
+    await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .catch(error => {
         console.log(error);
+    })
+    await firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const uid = user.uid
+        console.log(uid)
+        console.log(name)
+    /*
+        firebase.firestore().collection('users').doc(uid).set({name})
+          .then(()=> {
+            console.log(uid)
+          }).catch((e) => {
+            console.error("Error writing document: ", e)
+          })
+        console.log("Success to Signup")
+    */
+      }
     })
   }
 
@@ -46,8 +47,10 @@ class Signup extends Component {
     this.setState({ password: inputValue })
   }
 
-  handleNameChange = (inputName: string) => {
-    this.setState({ name: inputName })
+  handleNameChange = (inputValue: string) => {
+    console.log("hamdleNameChange")
+    console.log(inputValue)
+    this.setState({ name: inputValue })
   }
 
   render () {
