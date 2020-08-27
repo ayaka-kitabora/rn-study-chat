@@ -26,7 +26,6 @@ class Signup extends Component {
         const uid = user.uid
         console.log(uid)
         console.log(name)
-    /*
         firebase.firestore().collection('users').doc(uid).set({name})
           .then(()=> {
             console.log(uid)
@@ -34,7 +33,6 @@ class Signup extends Component {
             console.error("Error writing document: ", e)
           })
         console.log("Success to Signup")
-    */
       }
     })
   }
