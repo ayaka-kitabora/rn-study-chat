@@ -11,6 +11,7 @@ if (!global.atob) { global.atob = decode }
 // ページを追加する
 import Login from './screens/Login';
 import Signup from './screens/Signup';
+import RoomList from './screens/RoomList';
 
 
 class App extends Component {
@@ -18,8 +19,9 @@ class App extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Signup" component={Signup} />
+          <Stack.Screen name="ルーム" component={RoomList} />
+          <Stack.Screen name="ログイン" component={Login} />
+          <Stack.Screen name="サインアップ" component={Signup} />
         </Stack.Navigator>
       </NavigationContainer>
     )

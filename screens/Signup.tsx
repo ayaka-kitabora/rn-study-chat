@@ -1,9 +1,15 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import firebase from '../Firebase';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type NavigationProp = StackNavigationProp<MainStackParamList, 'RoomList'>;
+interface Props {
+  navigation: NavigationProp;
+}
 
 
-class Signup extends Component {
+class Signup extends Component<Props> {
   state = {
     user: null as any,
     email: '' as string,
@@ -21,7 +27,7 @@ class Signup extends Component {
     .catch(error => {
         console.log(error);
     })
-    await firebase.auth().onAuthStateChanged(function(user) {
+    await firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         const uid = user.uid
         console.log(uid)
@@ -29,10 +35,11 @@ class Signup extends Component {
         firebase.firestore().collection('users').doc(uid).set({name})
           .then(()=> {
             console.log(uid)
+            console.log("Success to Signup")
+            this.props.navigation.navigate('RoomList')
           }).catch((e) => {
             console.error("Error writing document: ", e)
           })
-        console.log("Success to Signup")
       }
     })
   }

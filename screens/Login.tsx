@@ -23,7 +23,7 @@ class Login extends Component<Props> {
   login() {
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
     .then(_response => {
-        alert("Login Success!");
+      this.props.navigation.navigate('RoomList')
     })
     .catch(error => {
         alert(error.message);

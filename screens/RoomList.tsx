@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, FlatList } from 'react-native';
 import firebase from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -11,7 +11,7 @@ interface Props {
 
 class RoomList extends Component<Props> {
   state = {
-    rooms: []
+    rooms: [] as any 
   }
   componentDidMount() {
     firebase.firestore().collection('room').doc()
@@ -19,6 +19,7 @@ class RoomList extends Component<Props> {
       .then((querySnapshot: any)=> { //TODO any
         querySnapshot.forEach((doc: any) => { //TODO any
           console.log(doc.id, " => ", doc.data());
+          this.state.rooms.push({...doc.data(), id: doc.id})
         })
       }).catch((e) => {
         console.error("Error writing document: ", e)
@@ -27,10 +28,12 @@ class RoomList extends Component<Props> {
 
   render () {
     return (
-      <View style={styles.container}>
-        <View style={styles.row}>
-        </View>
-      </View>
+        <FlatList
+          data={this.state.rooms}
+          renderItem={(room: any) => {
+            return <Text>{room.id}</Text>
+          }}
+        />
     );
   }
 }
