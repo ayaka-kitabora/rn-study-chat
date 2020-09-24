@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, FlatList } from 'react-native';
-import firebase from '../Firebase';
+import { ListItem, Avatar } from 'react-native-elements'
+import { db } from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
@@ -13,59 +14,68 @@ class RoomList extends Component<Props> {
   state = {
     rooms: [] as any 
   }
-  componentDidMount() {
-    firebase.firestore().collection('room').doc()
-      .get()
-      .then((querySnapshot: any)=> { //TODO any
-        querySnapshot.forEach((doc: any) => { //TODO any
-          console.log(doc.id, " => ", doc.data());
-          this.state.rooms.push({...doc.data(), id: doc.id})
-        })
-      }).catch((e) => {
-        console.error("Error writing document: ", e)
-      })
+
+  getData = async () => {
+    const roomRef = db.collection('rooms')
+    const snapshots = await roomRef.get()
+    const docs = snapshots.docs.map(doc => doc.data())
+    console.log(docs)
+    
+    await this.setState({
+        rooms: docs,
+    })
   }
+
+  componentDidMount = async () => {
+    await this.getData()
+    //collectionの更新を監視
+    // this.unsubscribe = db.collection("members").onSnapshot(this.onCollectionUpdate)
+  }
+
+  /*
+  //更新時のcalback
+  onCollectionUpdate = (querySnapshot: any) => {
+    //変更の発生源を特定 local:自分, server:他人
+    // const source = querySnapshot.metadata.hasPendingWrites ? "local" : "server";
+    // if (source === 'local')  this.getData(); //期待した動きをしない
+    this.getData();
+  }
+
+
+  //監視解除
+  componentWillUnmount = () => {
+    this.unsubscribe();
+  }
+  */
 
   render () {
     return (
-        <FlatList
-          data={this.state.rooms}
-          renderItem={(room: any) => {
-            return <Text>{room.id}</Text>
-          }}
-        />
-    );
+      <View>
+        {
+          this.state.rooms.map((room: any, i: number) => (
+            <ListItem key={i} bottomDivider>
+              <ListItem.Content>
+                <ListItem.Title>{room.name}</ListItem.Title>
+                <View style={styles.subtitleView}>
+                  <ListItem.Subtitle style={styles.ratingText}>{room.topic}</ListItem.Subtitle>
+                </View>
+              </ListItem.Content>
+              <ListItem.Chevron />
+            </ListItem>
+          ))
+        }
+      </View>
+    )
   }
 }
 export default RoomList;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  row: {
-    width: 200,
+  subtitleView: {
     flexDirection: 'row',
-    marginBottom: 10,
-    alignItems: 'center',
+    paddingTop: 5,
   },
-  input: {
-    width: 150,
-    borderColor: '#333',
-    borderWidth: 1,
-    padding: 5
-  },
-  submit: {
-    width: 100,
-    borderColor: '#333',
-    borderWidth: 1,
-    textAlign: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    padding: 5,
-    marginTop: 10,
+  ratingText: {
+    color: 'grey'
   }
-});
+})
