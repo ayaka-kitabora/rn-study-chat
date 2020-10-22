@@ -12,6 +12,7 @@ if (!global.atob) { global.atob = decode }
 import Login from './screens/Login';
 import Signup from './screens/Signup';
 import RoomList from './screens/RoomList';
+import Room from './screens/Room';
 
 
 class App extends Component {
@@ -20,6 +21,7 @@ class App extends Component {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="ルーム" component={RoomList} />
+          <Stack.Screen name="チャット" component={Room} />
           <Stack.Screen name="ログイン" component={Login} />
           <Stack.Screen name="サインアップ" component={Signup} />
         </Stack.Navigator>

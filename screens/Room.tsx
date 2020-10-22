@@ -3,34 +3,40 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, FlatList }
 import { ListItem, Avatar } from 'react-native-elements'
 import { db } from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useRoute } from '@react-navigation/native';
 
-type NavigationProp = StackNavigationProp<MainStackParamList, 'Room'>;
+
+type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
 interface Props {
   navigation: NavigationProp;
+  id: String;
+  route: any;
+}
+
+export default function(props: Props) {
+  const route = useRoute();
+
+  return <Room {...props} route={route} />;
 }
 
 
-class RoomList extends Component<Props> {
+
+
+class Room extends Component<Props> {
   state = {
-    rooms: [] as any 
+    room: {
+      messages: []
+    },
   }
-
-  getData = async () => {
-    const roomRef = db.collection('rooms')
-    const snapshots = await roomRef.get()
-    const docs = snapshots.docs.map(doc => doc.data())
-    console.log(docs)
-    
-    await this.setState({
-        rooms: docs,
-    })
-  }
-
+  /*
   componentDidMount = async () => {
     await this.getData()
     //collectionの更新を監視
     // this.unsubscribe = db.collection("members").onSnapshot(this.onCollectionUpdate)
   }
+  */
+
+
 
   /*
   //更新時のcalback
@@ -47,32 +53,30 @@ class RoomList extends Component<Props> {
     this.unsubscribe();
   }
   */
- 
-  onClickRoom = (id: string) => {
-    this.props.navigation.navigate('Room', { id: id })
-  }
 
   render () {
+    const { route } = this.props;
+    const getData = async () => {
+      const roomRef = db.collection('rooms')
+      const doc = await roomRef.doc(route.id).get()
+      console.log(doc)
+      if (doc.exists) {
+        console.log("Document data:", doc.data());
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+      
+      await this.setState({
+          rooms: doc,
+      })
+    }
     return (
       <View>
-        {
-          this.state.rooms.map((room: any, i: number) => (
-            <ListItem key={i} bottomDivider onPress={() => this.onClickRoom(room.id)}>
-              <ListItem.Content>
-                <ListItem.Title>{room.name}</ListItem.Title>
-                <View style={styles.subtitleView}>
-                  <ListItem.Subtitle style={styles.ratingText}>{room.topic}</ListItem.Subtitle>
-                </View>
-              </ListItem.Content>
-              <ListItem.Chevron />
-            </ListItem>
-          ))
-        }
       </View>
     )
   }
 }
-export default RoomList;
 
 const styles = StyleSheet.create({
   subtitleView: {
