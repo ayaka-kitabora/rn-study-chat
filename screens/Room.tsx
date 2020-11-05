@@ -28,6 +28,7 @@ class Room extends Component<Props> {
       messages: []
     },
   }
+
   /*
   componentDidMount = async () => {
     await this.getData()
@@ -35,8 +36,6 @@ class Room extends Component<Props> {
     // this.unsubscribe = db.collection("members").onSnapshot(this.onCollectionUpdate)
   }
   */
-
-
 
   /*
   //更新時のcalback
@@ -56,9 +55,12 @@ class Room extends Component<Props> {
 
   render () {
     const { route } = this.props;
-    const getData = async () => {
+    console.log("route.id")
+    console.log(route)
+    console.log(route.params.id)
+    async () => {
       const roomRef = db.collection('rooms')
-      const doc = await roomRef.doc(route.id).get()
+      const doc = await roomRef.doc(route.params.id).get()
       console.log(doc)
       if (doc.exists) {
         console.log("Document data:", doc.data());

@@ -18,8 +18,10 @@ class RoomList extends Component<Props> {
   getData = async () => {
     const roomRef = db.collection('rooms')
     const snapshots = await roomRef.get()
-    const docs = snapshots.docs.map(doc => doc.data())
-    console.log(docs)
+    const docs = snapshots.docs.map(doc => {
+      console.log(doc.data())
+      return { ...doc.data(), id: doc.id}
+    })
     
     await this.setState({
         rooms: docs,
@@ -49,7 +51,9 @@ class RoomList extends Component<Props> {
   */
  
   onClickRoom = (id: string) => {
-    this.props.navigation.navigate('Room', { id: id })
+    this.props.navigation.navigate('Room',{
+      id: id,
+    })
   }
 
   render () {
