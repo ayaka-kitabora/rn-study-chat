@@ -19,7 +19,6 @@ class RoomList extends Component<Props> {
     const roomRef = db.collection('rooms')
     const snapshots = await roomRef.get()
     const docs = snapshots.docs.map(doc => {
-      console.log(doc.data())
       return { ...doc.data(), id: doc.id}
     })
     

@@ -24,57 +24,38 @@ export default function(props: Props) {
 
 class Room extends Component<Props> {
   state = {
-    room: {
-      messages: []
-    },
+    messages: [] as any
   }
 
-  /*
   componentDidMount = async () => {
-    await this.getData()
-    //collectionの更新を監視
-    // this.unsubscribe = db.collection("members").onSnapshot(this.onCollectionUpdate)
-  }
-  */
-
-  /*
-  //更新時のcalback
-  onCollectionUpdate = (querySnapshot: any) => {
-    //変更の発生源を特定 local:自分, server:他人
-    // const source = querySnapshot.metadata.hasPendingWrites ? "local" : "server";
-    // if (source === 'local')  this.getData(); //期待した動きをしない
-    this.getData();
-  }
-
-
-  //監視解除
-  componentWillUnmount = () => {
-    this.unsubscribe();
-  }
-  */
-
-  render () {
     const { route } = this.props;
-    console.log("route.id")
-    console.log(route)
-    console.log(route.params.id)
-    async () => {
-      const roomRef = db.collection('rooms')
-      const doc = await roomRef.doc(route.params.id).get()
-      console.log(doc)
-      if (doc.exists) {
-        console.log("Document data:", doc.data());
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-      
-      await this.setState({
-          rooms: doc,
-      })
-    }
+    this.getMessages(route.params.id)
+  }
+
+  async getMessages (id: string) {
+    const roomRef = db.collection('rooms')
+    const snapshots = await roomRef.doc(id).collection('messages').get()
+    const docs = snapshots.docs.map(doc => {
+      console.log(doc.id)
+      return { ...doc.data(), id: doc.id}
+    })
+    await this.setState({
+        messages: docs,
+    })
+  }
+  render () {
     return (
       <View>
+        {this.state.messages &&
+          this.state.messages.map((message: any, i: number) => (
+            <ListItem key={i} bottomDivider>
+              <ListItem.Content>
+                <ListItem.Title>{message.text}</ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Chevron />
+            </ListItem>
+          ))
+        }
       </View>
     )
   }
