@@ -19,24 +19,22 @@ export default function(props: Props) {
   return <Room {...props} route={route} />;
 }
 
-
-
-
 class Room extends Component<Props> {
   state = {
-    messages: [] as any
+    messages: [] as any,
+    loginedUser: 'テスト名前',
   }
 
   componentDidMount = async () => {
     const { route } = this.props;
-    this.getMessages(route.params.id)
+    //this.getMessages(route.params.id)
+    this.getMessages('RtK1pvXjuzYXMrpOCQ5w')
   }
 
   async getMessages (id: string) {
     const roomRef = db.collection('rooms')
     const snapshots = await roomRef.doc(id).collection('messages').get()
     const docs = snapshots.docs.map(doc => {
-      console.log(doc.id)
       return { ...doc.data(), id: doc.id}
     })
     await this.setState({
@@ -45,15 +43,15 @@ class Room extends Component<Props> {
   }
   render () {
     return (
-      <View>
+      <View style={styles.chats}>
         {this.state.messages &&
           this.state.messages.map((message: any, i: number) => (
-            <ListItem key={i} bottomDivider>
-              <ListItem.Content>
-                <ListItem.Title>{message.text}</ListItem.Title>
-              </ListItem.Content>
-              <ListItem.Chevron />
-            </ListItem>
+            <View key={i} style={styles.chatWrapper} >
+              <Text style={styles.chatName}>{message.user.name}</Text>
+              <View style={styles.chat} >
+                <Text style={styles.chatText}>{message.text}</Text>
+              </View>
+            </View>
           ))
         }
       </View>
@@ -62,11 +60,25 @@ class Room extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
-  subtitleView: {
-    flexDirection: 'row',
-    paddingTop: 5,
+  chats: {
+    marginTop: 20,
+    marginRight: 20,
+    marginLeft: 20,
   },
-  ratingText: {
-    color: 'grey'
-  }
+  chatWrapper: {
+    marginBottom: 10,
+  },
+  chat: {
+    backgroundColor: 'white',
+    marginBottom: 5,
+    borderRadius: 6,
+    padding: 10,
+  },
+  chatText: {
+  },
+  chatName: {
+    color: 'grey',
+    fontSize: 10,
+    marginBottom: 5,
+  },
 })
