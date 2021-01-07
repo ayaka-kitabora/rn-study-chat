@@ -5,6 +5,10 @@ import { db } from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useRoute } from '@react-navigation/native';
 
+import { formatToTimeZone } from 'date-fns-timezone';
+const FORMAT = 'YYYY/MM/DD HH:mm';
+const TIME_ZONE_TOKYO = 'Asia/Tokyo';
+
 
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
 interface Props {
@@ -35,7 +39,7 @@ class Room extends Component<Props> {
     const roomRef = db.collection('rooms')
     const snapshots = await roomRef.doc(id).collection('messages').get()
     const docs = snapshots.docs.map(doc => {
-      return { ...doc.data(), id: doc.id}
+      return { ...doc.data(), id: doc.id }
     })
     await this.setState({
         messages: docs,
@@ -51,6 +55,12 @@ class Room extends Component<Props> {
               <View style={styles.chat} >
                 <Text style={styles.chatText}>{message.text}</Text>
               </View>
+              <Text style={styles.chatDate}>{formatToTimeZone(
+                new Date(message.createdAt.seconds * 1000),
+                  FORMAT,
+                  { timeZone: TIME_ZONE_TOKYO }
+                )}
+              </Text>
             </View>
           ))
         }
@@ -75,6 +85,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   chatText: {
+  },
+  chatDate: {
+    textAlign: 'right',
+    color: 'grey',
+    fontSize: 10,
+    marginBottom: 5,
   },
   chatName: {
     color: 'grey',
