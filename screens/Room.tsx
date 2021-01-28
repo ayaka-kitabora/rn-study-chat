@@ -31,8 +31,7 @@ class Room extends Component<Props> {
 
   componentDidMount = async () => {
     const { route } = this.props;
-    //this.getMessages(route.params.id)
-    this.getMessages('RtK1pvXjuzYXMrpOCQ5w')
+    this.getMessages(route.params.id)
   }
 
   async getMessages (id: string) {

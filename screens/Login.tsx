@@ -2,12 +2,16 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import firebase from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useSetRecoilState } from "recoil";
+import { userState } from "../atoms/User";
+import { db } from '../Firebase';
 
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
 interface Props {
   navigation: NavigationProp;
 }
 
+const setUser = useSetRecoilState(userState);
 
 class Login extends Component<Props> {
   state = {
@@ -16,8 +20,18 @@ class Login extends Component<Props> {
     password: '' as string,
   }
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user: any) => {
-      this.setState({ user })
+    firebase.auth().onAuthStateChanged(async (user: any) => {
+      const usersRef = db.collection('users')
+      const doc = await usersRef.doc(user.id).get()
+      if (doc.exists) {
+        const data = doc.data()
+        setUser(() => {
+          return {
+            id: user.id,
+            name: data?.name,
+          }
+        })
+      }
     })
   }
   login() {

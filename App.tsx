@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler';
 import React, {Component} from 'react';
+import { RecoilRoot } from 'recoil';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -18,14 +19,16 @@ import Room from './screens/Room';
 class App extends Component {
   render() {
     return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Room" component={Room} />
-          <Stack.Screen name="ルーム" component={RoomList} />
-          <Stack.Screen name="ログイン" component={Login} />
-          <Stack.Screen name="サインアップ" component={Signup} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <RecoilRoot>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="ログイン" component={Login} />
+            <Stack.Screen name="Room" component={Room} />
+            <Stack.Screen name="ルーム" component={RoomList} />
+            <Stack.Screen name="サインアップ" component={Signup} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </RecoilRoot>
     )
   }
 }
