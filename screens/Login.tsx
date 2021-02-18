@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import firebase from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSetRecoilState } from "recoil";
-import { userState } from "../atoms/User";
+import { useSetRecoilState } from 'recoil';
+import { userState } from '../atoms/User';
 import { db } from '../Firebase';
 
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
@@ -11,84 +11,81 @@ interface Props {
   navigation: NavigationProp;
 }
 
-const setUser = useSetRecoilState(userState);
 
-class Login extends Component<Props> {
-  state = {
-    user: null as any,
-    email: '' as string,
-    password: '' as string,
-  }
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(async (user: any) => {
+function Login(props: Props) {
+
+  const [user, setUser] = useSetRecoilState(userState)
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  useEffect (() =>{
+    firebase.auth().onAuthStateChanged(async (userData: any) => {
       const usersRef = db.collection('users')
-      const doc = await usersRef.doc(user.id).get()
+      const doc = await usersRef.doc(userData.id).get()
       if (doc.exists) {
         const data = doc.data()
-        setUser(() => {
-          return {
-            id: user.id,
-            name: data?.name,
-          }
+        setUser({
+          id: userData.id,
+          name: data?.name,
         })
+        console.log(user)
       }
     })
-  }
-  login() {
+  })
+  const login = () => {
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
     .then(_response => {
-      this.props.navigation.navigate('RoomList')
+      props.navigation.navigate('RoomList')
     })
     .catch(error => {
         alert(error.message);
     });
   }
-  logout() {
+  const logout = () => {
     firebase.auth().signOut()
   }
 
-  handleEmailChange = (inputValue: string) => {
-    this.setState({ email: inputValue })
+  const handleEmailChange = (inputValue: string) => {
+    setEmail(inputValue)
   }
 
-  handlePasswordChange = (inputValue: string) => {
-    this.setState({ password: inputValue })
+  const handlePasswordChange = (inputValue: string) => {
+    setPassword(inputValue)
   }
 
-  render () {
-    return (
-      <View style={styles.container}>
-        <View style={styles.row}>
-          <Text>メールアドレス: </Text>
-          <TextInput
-            style={styles.input}
-            value={this.state.email}
-            onChangeText={this.handleEmailChange}
-          />
-        </View>
-        <View style={styles.row}>
-          <Text>パスワード: </Text>
-          <TextInput
-            style={styles.input}
-            value={this.state.password}
-            onChangeText={this.handlePasswordChange}
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.submit}
-          onPress={() => this.login()}
-        >
-          <Text>ログイン</Text>
-        </TouchableOpacity>
-        <Button
-          title="アカウント作成"
-          onPress={() => {
-            this.props.navigation.navigate('Signup')
-          }}
+  return (
+    <View style={styles.container}>
+      <View style={styles.row}>
+        <Text>メールアドレス: </Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={handleEmailChange}
         />
       </View>
-    );
-  }
+      <View style={styles.row}>
+        <Text>パスワード: </Text>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={handlePasswordChange}
+        />
+      </View>
+      <TouchableOpacity
+        style={styles.submit}
+        onPress={() => login()}
+      >
+        <Text>ログイン</Text>
+      </TouchableOpacity>
+      <Button
+        title="アカウント作成"
+        onPress={() => {
+          props.navigation.navigate('Signup')
+        }}
+      />
+    </View>
+  );
 }
 export default Login;
 
