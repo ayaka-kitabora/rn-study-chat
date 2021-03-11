@@ -24,7 +24,7 @@ class App extends Component {
           <Stack.Navigator>
             <Stack.Screen name="ログイン" component={Login} />
             <Stack.Screen name="Room" component={Room} />
-            <Stack.Screen name="ルーム" component={RoomList} />
+            <Stack.Screen name="RoomList" component={RoomList} />
             <Stack.Screen name="サインアップ" component={Signup} />
           </Stack.Navigator>
         </NavigationContainer>

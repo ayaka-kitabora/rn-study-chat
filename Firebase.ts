@@ -15,8 +15,6 @@ import {
   messagingSenderId,
   appId } from 'react-native-dotenv'
 
-console.log("process.env.apiKey")
-console.log(process.env.apiKey)
 // Initialize Firebase
 const firebaseConfig = {
   apiKey,

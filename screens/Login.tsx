@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import firebase from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { userState } from '../atoms/User';
 import { db } from '../Firebase';
 
@@ -14,29 +14,36 @@ interface Props {
 
 function Login(props: Props) {
 
-  const [user, setUser] = useSetRecoilState(userState)
+  const [user, setUser ] = useRecoilState(userState)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  useEffect (() =>{
-    firebase.auth().onAuthStateChanged(async (userData: any) => {
-      const usersRef = db.collection('users')
-      const doc = await usersRef.doc(userData.id).get()
-      if (doc.exists) {
-        const data = doc.data()
-        setUser({
-          id: userData.id,
-          name: data?.name,
-        })
-        console.log(user)
-      }
+  const firebaseLogin = async (id: string) => {
+    console.log('id', id)
+    if (!id) return
+    const usersRef = db.collection('users')
+    const doc = await usersRef.doc(id).get()
+    if (doc.exists) {
+      const data = doc.data()
+      setUser({
+        id: id,
+        name: data?.name,
+      })
+      console.log(user)
+    }
+    props.navigation.navigate('RoomList')
+  }
+  useEffect(() =>{
+    firebase.auth().onAuthStateChanged(async (user: any) => {
+      if (user) firebaseLogin(user.id)
     })
-  })
+  },[])
   const login = () => {
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-    .then(_response => {
-      props.navigation.navigate('RoomList')
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(data => {
+      console.log(data?.user?.uid)
+      if (data.user) firebaseLogin(data?.user?.uid)
     })
     .catch(error => {
         alert(error.message);
