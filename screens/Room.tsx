@@ -9,7 +9,6 @@ import { formatToTimeZone } from 'date-fns-timezone';
 const FORMAT = 'YYYY/MM/DD HH:mm';
 const TIME_ZONE_TOKYO = 'Asia/Tokyo';
 
-
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
 interface Props {
   navigation: NavigationProp;

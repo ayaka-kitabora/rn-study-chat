@@ -7,6 +7,6 @@ export interface User {
 
 
 export const userState = atom({
-    key: 'userState',
-    default: null as User | null,
+  key: 'userState',
+  default: null as User | null,
 })

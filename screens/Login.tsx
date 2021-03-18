@@ -14,7 +14,7 @@ interface Props {
 
 function Login(props: Props) {
 
-  const [user, setUser ] = useRecoilState(userState)
+  const [user, setUser] = useRecoilState(userState)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
