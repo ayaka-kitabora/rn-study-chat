@@ -3,33 +3,40 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, FlatList }
 import { ListItem, Avatar } from 'react-native-elements'
 import { db } from '../Firebase';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useRecoilState } from 'recoil';
-import { roomListState, roomState } from '../atoms/Room';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { roomState, Room } from '../atoms/Room';
+import { userState, User } from '../atoms/User';
 
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Room'>;
 interface Props {
   navigation: NavigationProp;
 }
 
-function RoomList(props: Props) {
-  const [rooms, setRooms] = useRecoilState(roomListState)
-  const [room, setRoom] = useRecoilState(roomState)
+export default function(props: Props) {
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const setStateRoom = useSetRecoilState(roomState);
 
   const getData = async () => {
     const roomRef = db.collection('rooms')
     const snapshots = await roomRef.get()
-    let docs = []
-    docs = snapshots.docs.map(doc => {
+    let docs = snapshots.docs.map(doc => {
       if (doc.data) {
-        return { ...doc.data(), id: doc.id }
+        const { author, created_at, name, topic } = doc.data()
+        console.log('id', doc.id)
+        console.log('author', author.name)
+        console.log('created_at', created_at)
+        return {
+          id: doc.id,
+          author: author.name,
+          created_at,
+          name,
+          topic,
+        }
       } else {
-        return {}
+        return null
       }
     })
-    
-    if (docs.length > 0) {
-      await setRooms(docs)
-    }
+    await setRooms(docs as Room[])
   }
 
   useEffect(() => {
@@ -55,8 +62,8 @@ function RoomList(props: Props) {
   */
  
   const onClickRoom = (id: string) => {
-    const room = rooms.find(room => room && room.id === id)
-    setRoom(room)
+    const clickRoom = rooms.find(item => item && item?.id === id)
+    setStateRoom(clickRoom as Room)
     props.navigation.navigate('Room',{
       id: id,
     })
@@ -65,12 +72,12 @@ function RoomList(props: Props) {
   return (
     <View>
       {
-        rooms.map((room: any, i: number) => (
-          <ListItem key={i} bottomDivider onPress={() => onClickRoom(room.id)}>
+        rooms.map((item: any, i: number) => (
+          <ListItem key={i} bottomDivider onPress={() => onClickRoom(item.id)}>
             <ListItem.Content>
-              <ListItem.Title>{room.name}</ListItem.Title>
+              <ListItem.Title>{item.name}</ListItem.Title>
               <View style={styles.subtitleView}>
-                <ListItem.Subtitle style={styles.ratingText}>{room.topic}</ListItem.Subtitle>
+                <ListItem.Subtitle style={styles.ratingText}>{item.topic}</ListItem.Subtitle>
               </View>
             </ListItem.Content>
             <ListItem.Chevron />
@@ -80,7 +87,6 @@ function RoomList(props: Props) {
     </View>
   )
 }
-export default RoomList;
 
 const styles = StyleSheet.create({
   subtitleView: {
