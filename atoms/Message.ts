@@ -2,6 +2,7 @@ import { atom } from 'recoil';
 
 export type Message = {
   user: {
+    id: string
     name: string
     user_url: string
   }
