@@ -20,18 +20,19 @@ function Login(props: Props) {
   const [password, setPassword] = useState('')
 
   const firebaseLogin = async (id: string) => {
-    console.log('id', id)
     if (!id) return
     const usersRef = db.collection('users')
-    const doc = await usersRef.doc(id).get()
-    if (doc.exists) {
-      const data = doc.data()
-      setUser({
-        id: id,
-        name: data?.name,
-      })
-      console.log(user)
-    }
+    await usersRef.doc(id).get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data()
+        if (data) {
+          setUser({
+            id: id,
+            name: data.name,
+          })
+        }
+      }
+    })
     props.navigation.navigate('RoomList')
   }
   useEffect(() =>{
@@ -42,8 +43,10 @@ function Login(props: Props) {
   const login = () => {
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then(data => {
-      console.log(data?.user?.uid)
-      if (data.user) firebaseLogin(data?.user?.uid)
+      if (data.user) {
+        console.log(data.user.uid)
+        firebaseLogin(data.user.uid)
+      }
     })
     .catch(error => {
         alert(error.message);

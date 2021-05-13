@@ -28,7 +28,6 @@ export default function(props: Props) {
 function Room(props: Props){
   const [messages, setMessages] = useState<Message[]>([])
   const user = useRecoilValue(userState)
-  const loginedUser = 'テスト名前'
 
   useEffect(() => {
     const { route } = props;
@@ -51,7 +50,6 @@ function Room(props: Props){
   }
 
   const currentUserBool = (message: Message) => {
-    console.log(message.user.id)
     return message.user.id === user.id
   }
 
