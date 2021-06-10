@@ -28,10 +28,11 @@ export default function(props: Props) {
 function Room(props: Props){
   const [messages, setMessages] = useState<Message[]>([])
   const user = useRecoilValue(userState)
+  const [inputText, setinputText] = useState('')
 
   useEffect(() => {
-    const { route } = props;
-    getMessages(route.params.id)
+    const { route } = props
+    getMessages(route?.params?.id ?? 'RtK1pvXjuzYXMrpOCQ5w') // 後でデフォルト値消す
   }, [])
 
   const getMessages = async(id: string) => {
@@ -53,24 +54,48 @@ function Room(props: Props){
     return message.user.id === user.id
   }
 
+  const submit = () => {
+    
+  }
+
+  const handleInputTextChange = (inputValue: string) => {
+    setinputText(inputValue)
+  }
+
   return (
-    <View style={styles.chats}>
-      {messages &&
-        messages.map((message: any, i: number) => (
-          <View key={i} style={styles.chatWrapper} >
-            <Text style={styles.chatName}>{message.user.name}</Text>
-            <View style={currentUserBool(message) ? styles.chatCurrent :  styles.chat} >
-              <Text style={styles.chatText}>{message.text}</Text>
+    <View style={styles.room}>
+      <View style={styles.chats}>
+        {messages &&
+          messages.map((message: any, i: number) => (
+            <View key={i} style={styles.chatWrapper} >
+              <Text style={styles.chatName}>{message.user.name}</Text>
+              <View style={currentUserBool(message) ? styles.chatCurrent :  styles.chat} >
+                <Text style={styles.chatText}>{message.text}</Text>
+              </View>
+              <Text style={styles.chatDate}>{formatToTimeZone(
+                new Date(message.created_at.seconds * 1000),
+                  FORMAT,
+                  { timeZone: TIME_ZONE_TOKYO }
+                )}
+              </Text>
             </View>
-            <Text style={styles.chatDate}>{formatToTimeZone(
-              new Date(message.created_at.seconds * 1000),
-                FORMAT,
-                { timeZone: TIME_ZONE_TOKYO }
-              )}
-            </Text>
-          </View>
-        ))
-      }
+          ))
+        }
+      </View>
+      <View style={styles.inputBox}>
+        <TextInput
+          style={styles.input}
+          value={inputText}
+          onChangeText={handleInputTextChange}
+          multiline
+        />
+        <TouchableOpacity
+          style={styles.submit}
+          onPress={() => submit()}
+        >
+          <Text style={styles.submitText}>送信</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -109,4 +134,34 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 5,
   },
+  submit: {
+    backgroundColor: '#7f7fff',
+    textAlign: 'center',
+    marginLeft: 10,
+    padding: 10,
+  },
+  submitText: {
+    color: '#fff',
+  },
+  input: {
+    width: 150,
+    padding: 8,
+    backgroundColor: 'white',
+    flex: 1
+  },
+  inputBox: {
+    position: 'absolute',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    backgroundColor: '#ccccff'
+  },
+  room: {
+    flex: 1,
+  }
 })
