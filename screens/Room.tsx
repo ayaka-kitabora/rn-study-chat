@@ -7,6 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import { messageListState, Message } from '../atoms/Message';
 import { useRecoilValue } from 'recoil';
 import { userState } from '../atoms/User';
+import firebase from '../Firebase';
 
 import { formatToTimeZone } from 'date-fns-timezone';
 const FORMAT = 'YYYY/MM/DD HH:mm';
@@ -28,26 +29,31 @@ export default function(props: Props) {
 function Room(props: Props){
   const [messages, setMessages] = useState<Message[]>([])
   const user = useRecoilValue(userState)
-  const [inputText, setinputText] = useState('')
+  const [inputText, setInputText] = useState('')
+
+
+  const { route } = props
+  const roomId = route?.params?.id ?? 'RtK1pvXjuzYXMrpOCQ5w' // 後でデフォルト値消す
 
   useEffect(() => {
-    const { route } = props
-    getMessages(route?.params?.id ?? 'RtK1pvXjuzYXMrpOCQ5w') // 後でデフォルト値消す
+    getMessages(roomId)
   }, [])
 
   const getMessages = async(id: string) => {
     const roomRef = db.collection('rooms')
-    const snapshots = await roomRef.doc(id).collection('messages').get()
-    const docs = snapshots.docs.map(doc => {
-      const data = doc.data()
-      return {
-        user: data.user,
-        id: doc.id,
-        created_at: data.createdAt,
-        text: data.text,
-       }
+    await roomRef.doc(id).collection('messages').onSnapshot(querySnapshot => {
+      let newMessages: Message[] = []
+      querySnapshot.forEach(doc => {
+        const data = doc.data()
+        newMessages.push({
+          user: data.user,
+          id: doc.id,
+          created_at: data.createdAt,
+          text: data.text,
+        })
+      })
+      setMessages(newMessages)
     })
-    await setMessages(docs)
   }
 
   const currentUserBool = (message: Message) => {
@@ -55,11 +61,27 @@ function Room(props: Props){
   }
 
   const submit = () => {
+    const newMessage = {
+      user: {
+        ...user,
+        user_url: db.doc('users/' + user.id),
+      },
+      text: inputText,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }
+    firebase.firestore().collection('rooms').doc(roomId).collection('messages').add(newMessage)
+      .then(()=> {
+        // テキストエリアのクリア
+        setInputText('')
+        console.log("Success to send")
+      }).catch((e) => {
+        console.error("Error writing document: ", e)
+      })
     
   }
 
   const handleInputTextChange = (inputValue: string) => {
-    setinputText(inputValue)
+    setInputText(inputValue)
   }
 
   return (
