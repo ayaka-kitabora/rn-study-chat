@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, FlatList } from 'react-native'
 import { ListItem, Avatar } from 'react-native-elements'
-import { db } from '../Firebase';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useRoute } from '@react-navigation/native';
-import { messageListState, Message } from '../atoms/Message';
-import { useRecoilValue } from 'recoil';
-import { userState } from '../atoms/User';
-import firebase from '../Firebase';
+import { db } from '../Firebase'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { useRoute } from '@react-navigation/native'
+import { messageListState, Message } from '../atoms/Message'
+import { useRecoilValue } from 'recoil'
+import { userState } from '../atoms/User'
+import firebase from '../Firebase'
 
-import { formatToTimeZone } from 'date-fns-timezone';
-const FORMAT = 'YYYY/MM/DD HH:mm';
-const TIME_ZONE_TOKYO = 'Asia/Tokyo';
+import { formatToTimeZone } from 'date-fns-timezone'
+const FORMAT = 'YYYY/MM/DD HH:mm'
+const TIME_ZONE_TOKYO = 'Asia/Tokyo'
 
-type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>;
+type NavigationProp = StackNavigationProp<MainStackParamList, 'Signup'>
 interface Props {
   navigation: NavigationProp;
-  id: String;
-  route: any;
+  id: String
+  route: any
 }
 
 export default function(props: Props) {
-  const route = useRoute();
+  const route = useRoute()
 
   return <Room {...props} route={route} />;
 }
@@ -30,7 +30,6 @@ function Room(props: Props){
   const [messages, setMessages] = useState<Message[]>([])
   const user = useRecoilValue(userState)
   const [inputText, setInputText] = useState('')
-
 
   const { route } = props
   const roomId = route?.params?.id ?? 'RtK1pvXjuzYXMrpOCQ5w' // 後でデフォルト値消す
@@ -48,7 +47,7 @@ function Room(props: Props){
         newMessages.push({
           user: data.user,
           id: doc.id,
-          created_at: data.createdAt,
+          created_at: data.created_at,
           text: data.text,
         })
       })
@@ -67,7 +66,7 @@ function Room(props: Props){
         user_url: db.doc('users/' + user.id),
       },
       text: inputText,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      created_at: firebase.firestore.FieldValue.serverTimestamp(),
     }
     firebase.firestore().collection('rooms').doc(roomId).collection('messages').add(newMessage)
       .then(()=> {
@@ -89,13 +88,13 @@ function Room(props: Props){
       <View style={styles.chats}>
         {messages &&
           messages.map((message: any, i: number) => (
-            <View key={i} style={styles.chatWrapper} >
+            <View key={i} style={styles.chatWrapper}>
               <Text style={styles.chatName}>{message.user.name}</Text>
               <View style={currentUserBool(message) ? styles.chatCurrent :  styles.chat} >
                 <Text style={styles.chatText}>{message.text}</Text>
               </View>
               <Text style={styles.chatDate}>{formatToTimeZone(
-                new Date(message.created_at.seconds * 1000),
+                new Date(message.created_at?.seconds * 1000),
                   FORMAT,
                   { timeZone: TIME_ZONE_TOKYO }
                 )}
@@ -185,5 +184,5 @@ const styles = StyleSheet.create({
   },
   room: {
     flex: 1,
-  }
+  },
 })

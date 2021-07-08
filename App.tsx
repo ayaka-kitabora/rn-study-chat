@@ -22,9 +22,9 @@ class App extends Component {
       <RecoilRoot>
         <NavigationContainer>
           <Stack.Navigator>
+            <Stack.Screen name="RoomList" component={RoomList} />
             <Stack.Screen name="ログイン" component={Login} />
             <Stack.Screen name="Room" component={Room} />
-            <Stack.Screen name="RoomList" component={RoomList} />
             <Stack.Screen name="サインアップ" component={Signup} />
           </Stack.Navigator>
         </NavigationContainer>
