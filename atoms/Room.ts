@@ -7,6 +7,8 @@ export type Room = {
     nanoseconds: number
   }
   id: string
+  name: string
+  topic: string
 }
 
 export const roomState = atom({

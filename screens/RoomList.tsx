@@ -7,6 +7,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { roomState, Room } from '../atoms/Room';
 import { userState, User } from '../atoms/User';
 import Modal from 'react-native-modal'
+import firebase from '../Firebase'
 
 type NavigationProp = StackNavigationProp<MainStackParamList, 'Room'>;
 interface Props {
@@ -16,28 +17,30 @@ interface Props {
 export default function(props: Props) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const setStateRoom = useSetRecoilState(roomState);
+  const [showModal, setShowModal] = useState(false);
+  const user = useRecoilValue(userState)
+
+  const [inputRoomName, setInputRoomName] = useState('');
+  const [inputTopic, setInputTopic] = useState('');
 
   const getData = async () => {
     const roomRef = db.collection('rooms')
-    const snapshots = await roomRef.get()
-    let docs = snapshots.docs.map(doc => {
-      if (doc.data) {
-        const { author, created_at, name, topic } = doc.data()
-        console.log('id', doc.id)
-        console.log('author', author.name)
-        console.log('created_at', created_at)
-        return {
-          id: doc.id,
-          author: author.name,
-          created_at,
-          name,
-          topic,
+    await roomRef.onSnapshot(querySnapshot => {
+      let rooms: Room[] = []
+      querySnapshot.forEach(doc => {
+        const data = doc.data()
+        if (data) {
+          rooms.push({
+            id: doc.id,
+            author: data.author.name,
+            created_at: data.created_at,
+            name: data.name,
+            topic: data.topic,
+          })
         }
-      } else {
-        return null
-      }
+      })
     })
-    await setRooms(docs as Room[])
+    await setRooms(rooms)
   }
 
   useEffect(() => {
@@ -70,14 +73,39 @@ export default function(props: Props) {
     })
   }
 
-  const addRoom = () => {
+  const handleModal = () => {
+    setShowModal(!showModal);
+  }
 
+  const handleInputRoomName = (inputRoomName: string) => {
+    setInputRoomName(inputRoomName)
+  }
+
+  const handleInputTopic = (inputTopic: string) => {
+    setInputTopic(inputTopic)
+  }
+
+  const submitRoomName = () => {
+    firebase.firestore().collection('rooms').add({
+      author: db.doc('users/' + user.id),
+      name: inputRoomName,
+      topic: inputTopic,
+      created_at: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+    .then(()=> {
+      // テキストエリアのクリア
+      setInputRoomName('')
+      setInputTopic('')
+      console.log("Success to send")
+    }).catch((e) => {
+      console.error("Error writing document: ", e)
+    })
   }
 
   return (
     <View style={styles.roomList}>
       <View style={styles.roomList}>
-      {
+        {
           rooms.map((item: any, i: number) => (
             <ListItem key={i} bottomDivider onPress={() => onClickRoom(item.id)}>
               <ListItem.Content>
@@ -92,24 +120,36 @@ export default function(props: Props) {
         }
         <TouchableOpacity
           style={styles.addRoom}
-          onPress={() => addRoom()}
+          onPress={() => handleModal()}
         >
           <Text style={styles.addText}>+</Text>
         </TouchableOpacity>
       </View>
-      <Modal isVisible={true}>
+      <Modal isVisible={showModal}>
         <View style={styles.modalWrap}>
           <View style={styles.modal}>
-            <Text>新しいルームを作ります</Text>
-            <Text>ルーム名: </Text>
+            <TouchableOpacity
+              style={styles.closeModal}
+              onPress={() => handleModal()}
+            >
+              <Text style={styles.closeText}>×</Text>
+            </TouchableOpacity>
+            <Text style={styles.modalHead}>新しいルームを作ります</Text>
             <TextInput
               style={styles.input}
-              // value={password}
-              // onChangeText={handlePasswordChange}
+              placeholder="ルーム名"
+              value={inputRoomName}
+              onChangeText={handleInputRoomName}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="トピック"
+              value={inputTopic}
+              onChangeText={handleInputTopic}
             />
             <TouchableOpacity
               style={styles.submit}
-              // onPress={() => login()}
+              onPress={() => submitRoomName()}
             >
               <Text>ログイン</Text>
           </TouchableOpacity>
@@ -162,15 +202,20 @@ const styles = StyleSheet.create({
     height: 200,
     zIndex: 2,
     padding: 20,
+    justifyContent: 'center',
+  },
+  modalHead: {
+    marginBottom: 10,
+    fontWeight: 'bold'
   },
   input: {
     width: 150,
     borderColor: '#333',
     borderWidth: 1,
-    textAlign: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-
+    padding: 5,
+    marginBottom: 10,
   },
   submit: {
     width: 100,
@@ -181,5 +226,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 5,
     marginTop: 10,
+  },
+  closeModal: {
+    borderRadius: 50,
+    backgroundColor: 'gray',
+    position: 'absolute',
+    right: -15,
+    top: -15,
+    width: 30,
+    height: 30,
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   }
 })
