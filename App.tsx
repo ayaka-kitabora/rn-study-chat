@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 import {decode, encode} from 'base-64';
-if (!global.btoa) {  global.btoa = encode }
+if (!global.btoa) { global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
 // ページを追加する
